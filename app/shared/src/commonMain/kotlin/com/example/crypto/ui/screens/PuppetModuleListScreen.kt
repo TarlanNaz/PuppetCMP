@@ -1,42 +1,59 @@
 package com.example.crypto.ui.screens
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.crypto.Strings
 import com.example.crypto.data.PuppetModule
+import com.example.crypto.ui.ModuleListState
+import com.example.crypto.ui.components.ModuleCard
+import crypto.app.shared.generated.resources.Res
+import crypto.app.shared.generated.resources.app_name
+import crypto.app.shared.generated.resources.clear
+import crypto.app.shared.generated.resources.language
+import crypto.app.shared.generated.resources.nothing_found
+import crypto.app.shared.generated.resources.search
+import crypto.app.shared.generated.resources.search_hint
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PuppetModuleListScreen(
-    modules: List<PuppetModule>,
-    strings: Strings,
+    state: ModuleListState,
+    onQueryChange: (String) -> Unit,
     onModuleClick: (PuppetModule) -> Unit,
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit,
     onLanguageClick: () -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    val filteredModules = modules.filter {
-        it.name.contains(searchQuery, ignoreCase = true) ||
-        it.owner.username.contains(searchQuery, ignoreCase = true)
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(strings.appName) },
+                title = { Text(stringResource(Res.string.app_name)) },
                 actions = {
                     TextButton(onClick = onLanguageClick) {
-                        Text(strings.language)
+                        Text(stringResource(Res.string.language))
                     }
                     Switch(
                         checked = isDarkTheme,
@@ -48,37 +65,40 @@ fun PuppetModuleListScreen(
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
+                value = state.query,
+                onValueChange = onQueryChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text(strings.searchHint) },
+                placeholder = { Text(stringResource(Res.string.search_hint)) },
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = strings.search)
+                    Icon(Icons.Default.Search, contentDescription = stringResource(Res.string.search))
                 },
                 trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = strings.clear)
+                    if (state.query.isNotEmpty()) {
+                        IconButton(onClick = { onQueryChange("") }) {
+                            Icon(Icons.Default.Clear, contentDescription = stringResource(Res.string.clear))
                         }
                     }
                 },
                 singleLine = true
             )
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(filteredModules) { module ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .clickable { onModuleClick(module) }
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(module.name, style = MaterialTheme.typography.titleMedium)
-                            Text("${strings.moduleBy} ${module.owner.username}")
-                        }
+            if (state.modules.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(stringResource(Res.string.nothing_found))
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.modules, key = { it.slug }) { module ->
+                        ModuleCard(module = module, onClick = { onModuleClick(module) })
                     }
                 }
             }
