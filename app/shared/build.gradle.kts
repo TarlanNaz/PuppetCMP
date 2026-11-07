@@ -73,6 +73,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.kotlinx.coroutinesCore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -90,4 +91,9 @@ composeCompiler {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.example.crypto.resources"
 }
