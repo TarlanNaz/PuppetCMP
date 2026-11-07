@@ -15,18 +15,6 @@
                               repeatCount="indefinite"/>
         </circle>
     </svg>
-    <script>
-        var currentLanguages = Object.getOwnPropertyDescriptor(Navigator.prototype, "languages");
-        var newLanguages = Object.assign({}, currentLanguages, {
-            get: function () {
-                if (window.__customLocale) {
-                    return [window.__customLocale];
-                }
-                return currentLanguages.get.apply(this);
-            }
-        });
-        Object.defineProperty(Navigator.prototype, "languages", newLanguages);
-    </script>
     <script type="application/javascript" src="webApp.js"></script>
 </body>
 </html>

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_title">Puppet Forge catalog</string>
+    <string name="action_back">Back</string>
+    <string name="action_toggle_theme">Toggle theme</string>
+    <string name="search_hint">Search by name or author</string>
+    <string name="nothing_found">Nothing found</string>
+    <string name="module_not_found">Module not found</string>
+    <string name="module_owner">by %1$s</string>
+    <string name="module_downloads">Downloads: %1$s</string>
+    <string name="detail_owner">Author: %1$s</string>
+    <string name="detail_version">Version: %1$s</string>
+    <string name="detail_license">License: %1$s</string>
+    <string name="detail_updated">Updated: %1$s</string>
+    <string name="section_description">Description</string>
+    <string name="section_tags">Tags</string>
+    <string name="section_neighbours">Nearby by downloads</string>
+    <string name="no_summary">No description</string>
+</resources>

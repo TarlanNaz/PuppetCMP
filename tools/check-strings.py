@@ -1,38 +1,47 @@
+#!/usr/bin/env python3
 import re
 import sys
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
-RES = Path(__file__).resolve().parent.parent / "app/shared/src/commonMain/composeResources"
-ARG = re.compile(r"%(\d+)\$[sd]")
+ROOT = Path(__file__).resolve().parent.parent
+RES = ROOT / "app/shared/src/commonMain/composeResources"
+BASE = "values"
 
 
-def load(folder):
-    root = ET.parse(RES / folder / "strings.xml").getroot()
-    return {s.get("name"): set(ARG.findall(s.text or "")) for s in root.findall("string")}
+def keys(path: Path) -> set[str]:
+    return set(re.findall(r'name="([^"]+)"', path.read_text(encoding="utf-8")))
 
 
-def main():
-    base = load("values")
-    ok = True
-    for folder in sorted(p.name for p in RES.glob("values-*")):
-        other = load(folder)
-        problems = []
-        for key in sorted(base.keys() - other.keys()):
-            problems.append(f"  нет в {folder}: {key}")
-        for key in sorted(other.keys() - base.keys()):
-            problems.append(f"  нет в values: {key}")
-        for key in sorted(base.keys() & other.keys()):
-            if base[key] != other[key]:
-                problems.append(f"  {key}: разные аргументы")
-        if problems:
-            ok = False
-            print(f"{folder}: расхождений {len(problems)}")
-            print("\n".join(problems))
+def main() -> int:
+    base_file = RES / BASE / "strings.xml"
+    if not base_file.exists():
+        print(f"нет базовой локали: {base_file.relative_to(ROOT)}")
+        return 1
+
+    base = keys(base_file)
+    others = sorted(p for p in RES.glob("values-*/strings.xml"))
+    if not others:
+        print("нет ни одной второй локали — нечего сверять")
+        return 1
+
+    failed = False
+    for path in others:
+        locale = path.parent.name
+        other = keys(path)
+        missing = sorted(base - other)
+        extra = sorted(other - base)
+        if missing or extra:
+            failed = True
+            print(f"{locale}: расхождений {len(missing) + len(extra)}")
+            for k in missing:
+                print(f"  нет в {locale}: {k}")
+            for k in extra:
+                print(f"  нет в {BASE}: {k}")
         else:
-            print(f"{folder}: 0 расхождений, ключей {len(other)}")
-    sys.exit(0 if ok else 1)
+            print(f"{locale}: 0 расхождений, ключей {len(other)}")
+
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

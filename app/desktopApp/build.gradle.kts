@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.components.resources)
 }
 
 compose.desktop {
@@ -24,5 +25,13 @@ compose.desktop {
             packageName = "com.example.crypto"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+tasks.withType<JavaExec>().configureEach {
+    if (name != "run") return@configureEach
+    val locale = providers.gradleProperty("locale").orNull
+    if (locale != null) {
+        doFirst { jvmArgs("-Duser.language=$locale", "-Duser.country=") }
     }
 }
