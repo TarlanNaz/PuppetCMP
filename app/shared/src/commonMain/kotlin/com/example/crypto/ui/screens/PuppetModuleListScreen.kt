@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -41,6 +42,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PuppetModuleListScreen(
     state: ModuleListState,
+    listState: LazyListState,
     onQueryChange: (String) -> Unit,
     onModuleClick: (PuppetModule) -> Unit,
     isDarkTheme: Boolean,
@@ -93,6 +95,7 @@ fun PuppetModuleListScreen(
                 }
             } else {
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)

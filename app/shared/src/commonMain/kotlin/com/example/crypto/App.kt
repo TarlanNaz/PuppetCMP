@@ -5,6 +5,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ fun App() {
     val repository = remember { MockModuleRepository() }
     val listViewModel = viewModel { ModuleListViewModel(repository) }
     val backStack = remember { mutableStateListOf<Route>(Route.List) }
+    val listState = rememberLazyListState()
 
     AppEnvironment(language) {
         MaterialTheme(
@@ -50,6 +52,7 @@ fun App() {
                     entry<Route.List> {
                         PuppetModuleListScreen(
                             state = listViewModel.state,
+                            listState = listState,
                             onQueryChange = listViewModel::onSearchQueryChange,
                             onModuleClick = { module -> backStack.add(Route.Detail(module.slug)) },
                             isDarkTheme = isDarkTheme,
@@ -58,13 +61,11 @@ fun App() {
                         )
                     }
                     entry<Route.Detail> { route ->
-                        val module = repository.getModule(route.slug)
+                        val module = remember(route.slug) { repository.getModule(route.slug) }
                         if (module != null) {
                             PuppetModuleDetailScreen(
                                 module = module,
-                                otherModules = repository.getModulesByOwner(module.owner.username)
-                                    .filter { it.slug != module.slug }
-                                    .take(3),
+                                otherModules = remember(route.slug) { repository.getRelatedModules(module) },
                                 onModuleClick = { other -> backStack.add(Route.Detail(other.slug)) },
                                 onBackClick = { backStack.removeLastOrNull() }
                             )

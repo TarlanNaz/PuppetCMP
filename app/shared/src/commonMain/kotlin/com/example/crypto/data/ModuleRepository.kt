@@ -3,7 +3,7 @@ package com.example.crypto.data
 interface ModuleRepository {
     fun getModules(): List<PuppetModule>
     fun getModule(slug: String): PuppetModule?
-    fun getModulesByOwner(username: String): List<PuppetModule>
+    fun getRelatedModules(module: PuppetModule): List<PuppetModule>
 }
 
 class MockModuleRepository : ModuleRepository {
@@ -12,6 +12,8 @@ class MockModuleRepository : ModuleRepository {
     override fun getModule(slug: String): PuppetModule? =
         mockModules.find { it.slug == slug }
 
-    override fun getModulesByOwner(username: String): List<PuppetModule> =
-        mockModules.filter { it.owner.username == username }
+    override fun getRelatedModules(module: PuppetModule): List<PuppetModule> =
+        mockModules
+            .filter { it.owner.username == module.owner.username && it.slug != module.slug }
+            .take(3)
 }
