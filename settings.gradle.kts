@@ -1,4 +1,4 @@
-rootProject.name = "Crypto"
+rootProject.name = "PuppetForge"
 
 pluginManagement {
     repositories {
@@ -35,5 +35,3 @@ include(":app:androidApp")
 include(":app:desktopApp")
 include(":app:shared")
 include(":app:webApp")
-include(":core")
-include(":server")
