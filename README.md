@@ -1,54 +1,36 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM), Server.
+# Каталог Puppet Forge — каркас на Compose Multiplatform (ЛР1)
 
-* [/app/iosApp](./app/iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Каталог модулей Puppet Forge. Сети пока нет: 20 модулей лежат в моках
+(`data/MockModules.kt`).
 
-* [/app/shared](./app/shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./app/shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./app/shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./app/shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## Запуск
 
-* [/core](./core/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./core/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+```bash
+./gradlew :app:desktopApp:run                  # основной таргет, интерфейс на русском
+./gradlew :app:desktopApp:run -Plocale=en      # тот же интерфейс на английском
+python3 tools/check-strings.py                 # паритет ключей локалей
+```
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+## Устройство
 
-### Running the apps
+```text
+app/shared/src/commonMain/kotlin/com/example/crypto/
+  Screen.kt              маршруты: sealed interface Screen { List, Detail(slug) }
+  App.kt                 сборка зависимостей, тема, шапка
+  domain/                PuppetModule, ModuleRepository, поиск и соседи
+  data/                  моки и ModuleRepositoryImpl
+  ui/navigation/         Navigator (бэкстек) и AppNavDisplay (NavDisplay)
+  ui/model/              UI-модели и мапперы
+  ui/components/         AppScaffold, CardSurface, ModuleAvatar
+  ui/screens/list/       состояние, намерения, ViewModel, фабрика, экран
+  ui/screens/detail/     то же для детали
+```
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
-
-- Android app: `./gradlew :app:androidApp:assembleDebug`
-- Desktop app:
-  - Hot reload: `./gradlew :app:desktopApp:hotRun --auto`
-  - Standard run: `./gradlew :app:desktopApp:run`
-- Server: `./gradlew :server:run`
-- Web app:
-  - Wasm target (faster, modern browsers): `./gradlew :app:webApp:wasmJsBrowserDevelopmentRun`
-  - JS target (slower, supports older browsers): `./gradlew :app:webApp:jsBrowserDevelopmentRun`
-- iOS app: open the [/app/iosApp](./app/iosApp) directory in Xcode and run it from there.
-
-### Running tests
-
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
-
-- Android tests: `./gradlew :app:shared:testAndroidHostTest`
-- Desktop tests: `./gradlew :app:shared:jvmTest`
-- Server tests: `./gradlew :server:test`
-- Web tests:
-  - Wasm target: `./gradlew :app:shared:wasmJsTest`
-  - JS target: `./gradlew :app:shared:jsTest`
-- iOS tests: `./gradlew :app:shared:iosSimulatorArm64Test`
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://kotlinlang.org/compose-multiplatform/),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+- Навигация — Navigation 3, мультиплатформенная сборка JetBrains
+  `org.jetbrains.androidx.navigation3:navigation3-ui`. Заданы прямой переход,
+  возврат и предиктивный возврат.
+- Экраны — MVI: вниз состояние (`StateFlow` из ViewModel), вверх намерения
+  (`onIntent`). ViewModel в экран не передаётся.
+- Подписи — только в `composeResources`: `values` (русский) и `values-en`.
+- Тема — токены `MaterialTheme`, светлая и тёмная, переключатель в шапке.
+- Отчёт компилятора Compose пишется в `app/shared/build/compose_compiler`.
