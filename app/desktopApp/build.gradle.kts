@@ -13,16 +13,25 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.components.resources)
 }
 
 compose.desktop {
     application {
-        mainClass = "com.example.crypto.MainKt"
+        mainClass = "com.example.puppet.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.example.crypto"
+            packageName = "com.example.puppet"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+tasks.withType<JavaExec>().configureEach {
+    if (name != "run") return@configureEach
+    val locale = providers.gradleProperty("locale").orNull
+    if (locale != null) {
+        doFirst { jvmArgs("-Duser.language=$locale", "-Duser.country=") }
     }
 }

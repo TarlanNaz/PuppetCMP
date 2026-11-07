@@ -20,11 +20,11 @@ dependencies {
 }
 
 android {
-    namespace = "com.example.crypto"
+    namespace = "com.example.puppet"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.example.crypto"
+        applicationId = "com.example.puppet"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		2B776B7510BC69868999DD67 /* Crypto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Crypto.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B776B7510BC69868999DD67 /* PuppetForge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PuppetForge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,7 +59,7 @@
 		4328AE530469C989D003D975 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2B776B7510BC69868999DD67 /* Crypto.app */,
+				2B776B7510BC69868999DD67 /* PuppetForge.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -87,7 +87,7 @@
 			packageProductDependencies = (
 			);
 			productName = iosApp;
-			productReference = 2B776B7510BC69868999DD67 /* Crypto.app */;
+			productReference = 2B776B7510BC69868999DD67 /* PuppetForge.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
