@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.puppet.data.ModuleRepositoryImpl
+import com.example.puppet.data.createModuleRepository
 import com.example.puppet.domain.ModuleRepository
 import com.example.puppet.locale.AppEnvironment
 import com.example.puppet.resources.Res
@@ -34,7 +34,7 @@ fun App() {
     var darkTheme by remember { mutableStateOf(false) }
     var language by remember { mutableStateOf<String?>(null) }
 
-    val repository: ModuleRepository = remember { ModuleRepositoryImpl() }
+    val repository: ModuleRepository = remember { createModuleRepository() }
     val navigator = remember { Navigator() }
     val listViewModelFactory = remember { ModuleListViewModelFactory(navigator, repository) }
     val detailViewModelFactory = remember { ModuleDetailViewModelFactory(navigator, repository) }

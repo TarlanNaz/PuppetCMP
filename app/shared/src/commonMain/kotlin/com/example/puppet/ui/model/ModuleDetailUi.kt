@@ -1,7 +1,11 @@
 package com.example.puppet.ui.model
 
+import androidx.compose.runtime.Immutable
 import com.example.puppet.domain.PuppetModule
 
+// Списки внутри после создания не меняются, поэтому модель честно помечена неизменяемой:
+// так Compose может пропускать перерисовку при частых обновлениях состояния.
+@Immutable
 data class ModuleDetailUi(
     val slug: String,
     val name: String,
@@ -16,6 +20,7 @@ data class ModuleDetailUi(
     val neighbours: List<NeighbourUi>,
 )
 
+@Immutable
 data class NeighbourUi(
     val slug: String,
     val name: String,
@@ -28,10 +33,10 @@ fun PuppetModule.toDetailUi(neighbours: List<PuppetModule>): ModuleDetailUi = Mo
     name = name,
     initial = displayInitial(name),
     owner = owner,
-    version = version,
+    version = version.ifEmpty { MISSING },
     downloads = displayDownloads(downloads),
     summary = summary,
-    license = license,
+    license = license.ifEmpty { MISSING },
     updatedAt = displayDate(updatedAt),
     tags = tags,
     neighbours = neighbours.map { other ->

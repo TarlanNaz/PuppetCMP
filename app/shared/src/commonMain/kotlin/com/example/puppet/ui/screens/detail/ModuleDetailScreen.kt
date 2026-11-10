@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.puppet.ui.components.LoadError
 import com.example.puppet.ui.components.ModuleAvatar
 import com.example.puppet.ui.model.ModuleDetailUi
 import com.example.puppet.resources.Res
@@ -43,6 +44,10 @@ fun ModuleDetailScreen(
 
         ModuleDetailState.NotFound -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(stringResource(Res.string.module_not_found))
+        }
+
+        ModuleDetailState.Error -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LoadError(onRetry = { onIntent(ModuleDetailIntent.Retry) })
         }
 
         is ModuleDetailState.Loaded -> ModuleDetailContent(
