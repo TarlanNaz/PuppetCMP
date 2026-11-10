@@ -1,19 +1,14 @@
 package com.example.puppet.domain
 
 interface ModuleRepository {
-    suspend fun getModules(): List<PuppetModule>
+    /** Страница каталога. Пустой [query] — весь каталог по убыванию загрузок. */
+    suspend fun getModulesPage(query: String, offset: Int): ModulesPage
+
+    /** Модуль по slug или `null`, если такого в источнике нет. */
     suspend fun getModule(slug: String): PuppetModule?
-}
 
-suspend fun ModuleRepository.getModules(query: String?): List<PuppetModule> =
-    getModules().filterByQuery(query)
-
-fun List<PuppetModule>.filterByQuery(query: String?): List<PuppetModule> {
-    val needle = query?.trim().orEmpty()
-    if (needle.isEmpty()) return this
-    return filter {
-        it.name.contains(needle, ignoreCase = true) || it.owner.contains(needle, ignoreCase = true)
-    }
+    /** Соседи модуля по числу загрузок среди уже загруженных в память модулей. */
+    suspend fun getNeighbours(slug: String): List<PuppetModule>
 }
 
 fun List<PuppetModule>.neighboursOf(slug: String): List<PuppetModule> {
