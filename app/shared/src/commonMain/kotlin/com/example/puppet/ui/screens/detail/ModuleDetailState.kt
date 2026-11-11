@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.example.puppet.ui.model.ModuleDetailUi
 import com.example.puppet.ui.model.NeighbourUi
 
+@Immutable
 sealed interface ModuleDetailState {
     data object Loading : ModuleDetailState
     data object NotFound : ModuleDetailState

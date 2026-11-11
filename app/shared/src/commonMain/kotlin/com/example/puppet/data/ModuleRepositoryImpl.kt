@@ -40,8 +40,10 @@ internal class ModuleRepositoryImpl(
     }
 
     override suspend fun getModule(slug: String): PuppetModule? {
-        val body = api.moduleJson(slug) ?: return null
-        val module = withContext(workDispatcher) { ForgeParser.parseModule(body) }
+        // Чтение тела ответа в строку и разбор — вне UI-диспетчера: ответ бывает большим.
+        val module = withContext(workDispatcher) {
+            api.moduleJson(slug)?.let(ForgeParser::parseModule)
+        } ?: return null
         remember(listOf(module))
         return module
     }
@@ -97,8 +99,10 @@ internal class ModuleRepositoryImpl(
     }
 
     private suspend fun fetchPage(query: String, limit: Int, offset: Int): ModulesPage {
-        val body = api.modulesJson(query = query, limit = limit, offset = offset)
-        val page = withContext(workDispatcher) { ForgeParser.parsePage(body) }
+        // Чтение тела ответа в строку и разбор — вне UI-диспетчера: ответ бывает большим.
+        val page = withContext(workDispatcher) {
+            ForgeParser.parsePage(api.modulesJson(query = query, limit = limit, offset = offset))
+        }
         remember(page.items)
         return page
     }

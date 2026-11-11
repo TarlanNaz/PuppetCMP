@@ -51,7 +51,8 @@ internal class ForgeApi(
     fun close() = client.close()
 
     private companion object {
-        // Список всех релизов экрану не нужен, а весит больше остального ответа.
-        const val EXCLUDED_FIELDS = "releases"
+        // Список релизов и тексты README, CHANGELOG, лицензии и справки экрану не нужны,
+        // а весят больше всего остального ответа. Поля перечисляются через пробел.
+        const val EXCLUDED_FIELDS = "releases readme changelog license reference"
     }
 }
