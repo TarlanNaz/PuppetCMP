@@ -25,6 +25,7 @@ internal object ForgeParser {
         return ModulesPage(
             items = response.results.map { it.toDomain() },
             nextOffset = if (pagination.next != null) pagination.offset + pagination.limit else null,
+            total = pagination.total,
         )
     }
 

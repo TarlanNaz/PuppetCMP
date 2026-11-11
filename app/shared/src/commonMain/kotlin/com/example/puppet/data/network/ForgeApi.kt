@@ -48,6 +48,8 @@ internal class ForgeApi(
             if (e.response.status == HttpStatusCode.NotFound) null else throw e
         }
 
+    fun close() = client.close()
+
     private companion object {
         // Список всех релизов экрану не нужен, а весит больше остального ответа.
         const val EXCLUDED_FIELDS = "releases"

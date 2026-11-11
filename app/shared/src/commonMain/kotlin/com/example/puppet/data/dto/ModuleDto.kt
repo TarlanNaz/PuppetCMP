@@ -19,6 +19,7 @@ internal data class PaginationDto(
     val limit: Int = 0,
     val offset: Int = 0,
     val next: String? = null,
+    val total: Int? = null,
 )
 
 @Serializable

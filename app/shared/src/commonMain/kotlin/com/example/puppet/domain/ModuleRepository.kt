@@ -1,13 +1,17 @@
 package com.example.puppet.domain
 
-interface ModuleRepository {
+/** Источник модулей. Держит сетевые ресурсы, поэтому закрывается вместе с приложением. */
+interface ModuleRepository : AutoCloseable {
     /** Страница каталога. Пустой [query] — весь каталог по убыванию загрузок. */
     suspend fun getModulesPage(query: String, offset: Int): ModulesPage
 
     /** Модуль по slug или `null`, если такого в источнике нет. */
     suspend fun getModule(slug: String): PuppetModule?
 
-    /** Соседи модуля по числу загрузок среди уже загруженных в память модулей. */
+    /**
+     * Соседи модуля в рейтинге всего каталога по числу загрузок: сам модуль и по одному
+     * модулю выше и ниже него (у первого в каталоге соседа выше нет).
+     */
     suspend fun getNeighbours(slug: String): List<PuppetModule>
 }
 

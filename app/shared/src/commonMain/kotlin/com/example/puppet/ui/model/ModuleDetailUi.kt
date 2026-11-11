@@ -17,7 +17,6 @@ data class ModuleDetailUi(
     val license: String,
     val updatedAt: String,
     val tags: List<String>,
-    val neighbours: List<NeighbourUi>,
 )
 
 @Immutable
@@ -28,7 +27,7 @@ data class NeighbourUi(
     val current: Boolean,
 )
 
-fun PuppetModule.toDetailUi(neighbours: List<PuppetModule>): ModuleDetailUi = ModuleDetailUi(
+fun PuppetModule.toDetailUi(): ModuleDetailUi = ModuleDetailUi(
     slug = slug,
     name = name,
     initial = displayInitial(name),
@@ -39,12 +38,13 @@ fun PuppetModule.toDetailUi(neighbours: List<PuppetModule>): ModuleDetailUi = Mo
     license = license.ifEmpty { MISSING },
     updatedAt = displayDate(updatedAt),
     tags = tags,
-    neighbours = neighbours.map { other ->
-        NeighbourUi(
-            slug = other.slug,
-            name = other.name,
-            initial = displayInitial(other.name),
-            current = other.slug == slug,
-        )
-    },
 )
+
+fun List<PuppetModule>.toNeighboursUi(currentSlug: String): List<NeighbourUi> = map { other ->
+    NeighbourUi(
+        slug = other.slug,
+        name = other.name,
+        initial = displayInitial(other.name),
+        current = other.slug == currentSlug,
+    )
+}
