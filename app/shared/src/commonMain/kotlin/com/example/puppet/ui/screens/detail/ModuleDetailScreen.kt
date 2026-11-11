@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.puppet.ui.components.LoadError
 import com.example.puppet.ui.components.ModuleAvatar
 import com.example.puppet.ui.model.ModuleDetailUi
 import com.example.puppet.resources.Res
@@ -45,8 +47,13 @@ fun ModuleDetailScreen(
             Text(stringResource(Res.string.module_not_found))
         }
 
+        ModuleDetailState.Error -> Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LoadError(onRetry = { onIntent(ModuleDetailIntent.Retry) })
+        }
+
         is ModuleDetailState.Loaded -> ModuleDetailContent(
             module = state.module,
+            neighbours = state.neighbours,
             onIntent = onIntent,
             modifier = modifier,
         )
@@ -56,6 +63,7 @@ fun ModuleDetailScreen(
 @Composable
 private fun ModuleDetailContent(
     module: ModuleDetailUi,
+    neighbours: NeighboursState,
     onIntent: (ModuleDetailIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,8 +90,22 @@ private fun ModuleDetailContent(
         Text(module.tags.joinToString(", "))
 
         Section(stringResource(Res.string.section_neighbours))
-        NeighbourRow(
-            neighbours = module.neighbours,
+        Neighbours(state = neighbours, onIntent = onIntent)
+    }
+}
+
+@Composable
+private fun Neighbours(
+    state: NeighboursState,
+    onIntent: (ModuleDetailIntent) -> Unit,
+) {
+    when (state) {
+        NeighboursState.Loading -> CircularProgressIndicator(Modifier.size(32.dp))
+
+        NeighboursState.Error -> LoadError(onRetry = { onIntent(ModuleDetailIntent.RetryNeighbours) })
+
+        is NeighboursState.Shown -> NeighbourRow(
+            neighbours = state.items,
             onClick = { slug -> onIntent(ModuleDetailIntent.NeighbourClicked(slug)) },
         )
     }
