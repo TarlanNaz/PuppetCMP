@@ -1,15 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Puppet Modules</string>
-    <string name="module_by">by %1$s</string>
-    <string name="back">Back</string>
-    <string name="name">Name:</string>
-    <string name="owner">Owner:</string>
-    <string name="version">Version:</string>
-    <string name="downloads">Downloads:</string>
-    <string name="description">Description:</string>
-    <string name="module_not_found">Module not found</string>
-    <string name="search_hint">Search modules...</string>
-    <string name="search">Search</string>
-    <string name="clear">Clear</string>
+    <string name="app_title">Каталог Puppet Forge</string>
+    <string name="action_back">Назад</string>
+    <string name="action_toggle_theme">Переключить тему</string>
+    <string name="search_hint">Поиск по названию или автору</string>
+    <string name="nothing_found">Ничего не найдено</string>
+    <string name="module_not_found">Модуль не найден</string>
+    <string name="module_owner">автор: %1$s</string>
+    <string name="module_downloads">Загрузок: %1$s</string>
+    <string name="detail_owner">Автор: %1$s</string>
+    <string name="detail_version">Версия: %1$s</string>
+    <string name="detail_license">Лицензия: %1$s</string>
+    <string name="detail_updated">Обновлён: %1$s</string>
+    <string name="section_description">Описание</string>
+    <string name="section_tags">Теги</string>
+    <string name="section_neighbours">Рядом по числу загрузок</string>
+    <string name="no_summary">Описания нет</string>
+    <string name="language_switch">EN</string>
 </resources>
