@@ -33,7 +33,8 @@ python3 tools/check-strings.py                   # паритет ключей �
 ```text
 app/shared/src/commonMain/kotlin/com/example/puppet/
   Screen.kt              маршруты: sealed interface Screen { List, Detail(slug) }
-  App.kt                 сборка зависимостей, тема, шапка
+  App.kt                 тема, шапка, навигация
+  AppGraph.kt            зависимости (ViewModel): закрывает репозиторий и HTTP-клиент
   domain/                PuppetModule, ModulesPage, ModuleRepository, соседи
   data/network/          ForgeApi (запросы) и expect platformHttpClient
   data/dto/              модели ответа API (kotlinx.serialization)
@@ -55,8 +56,13 @@ app/shared/src/{android,jvm,ios,js,wasmJs}Main/.../data/network/
   доменных и от UI-моделей, неизвестные поля игнорируются.
 - Разбор JSON, перевод в UI-модели и склейка страниц выполняются на
   `Dispatchers.Default`, а не на UI-диспетчере.
-- Кэш — только в памяти (уже загруженные модули, по ним считаются соседи).
-  На диск ничего не сохраняется.
+- Кэш — только в памяти. На диск ничего не сохраняется.
+- Соседи модуля — соседние места в рейтинге всего каталога по загрузкам. Если модуль
+  есть в уже загруженном начале списка, они берутся оттуда без запросов; иначе позиция
+  находится двоичным поиском по смещению (около 13 запросов по одной записи) и окно
+  вокруг неё берётся одним запросом. Соседи грузятся отдельно от карточки модуля.
+- HTTP-клиент принадлежит репозиторию, а репозиторий — `AppGraph` (ViewModel):
+  при очистке хранилища ViewModel он закрывается.
 - Навигация — Navigation 3, мультиплатформенная сборка JetBrains
   `org.jetbrains.androidx.navigation3:navigation3-ui`. Заданы прямой переход,
   возврат и предиктивный возврат.
