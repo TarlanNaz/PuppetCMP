@@ -27,9 +27,11 @@ internal data class ModuleDto(
     val slug: String,
     val name: String,
     val downloads: Long = 0,
-    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("updated_at")
+    val updatedAt: String? = null,
     val owner: OwnerDto? = null,
-    @SerialName("current_release") val currentRelease: ReleaseDto? = null,
+    @SerialName("current_release")
+    val currentRelease: ReleaseDto? = null,
 )
 
 @Serializable

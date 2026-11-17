@@ -54,6 +54,8 @@ app/shared/src/{android,jvm,ios,js,wasmJs}Main/.../data/network/
   уход с экрана) пробрасывается как `CancellationException` и ошибкой не считается.
 - Разбор ответа — `kotlinx.serialization`. Модели ответа (`data/dto`) отделены от
   доменных и от UI-моделей, неизвестные поля игнорируются.
+  `ContentNegotiation` читает тело ответа в `JsonElement`, затем `ForgeParser`
+  преобразует его в DTO и доменные модели. Клиент и парсер получают общий `Json` извне.
 - Разбор JSON, перевод в UI-модели и склейка страниц выполняются на
   `Dispatchers.Default`, а не на UI-диспетчере.
 - Кэш — только в памяти. На диск ничего не сохраняется.

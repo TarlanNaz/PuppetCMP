@@ -1,6 +1,7 @@
 package com.example.puppet.data
 
 import com.example.puppet.data.network.ForgeApi
+import com.example.puppet.data.network.configureForgeClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -35,8 +36,12 @@ class NeighboursTest {
             }
             respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
         }
-        val api = ForgeApi(client = HttpClient(engine), baseUrl = "https://forge.test")
-        return ModuleRepositoryImpl(api = api, workDispatcher = Dispatchers.Unconfined)
+        val json = createForgeJson()
+        val api = ForgeApi(
+            client = HttpClient(engine) { configureForgeClient(json) },
+            baseUrl = "https://forge.test",
+        )
+        return ModuleRepositoryImpl(api = api, parser = ForgeParser(json), workDispatcher = Dispatchers.Unconfined)
     }
 
     private fun moduleJson(module: Pair<String, Long>) =

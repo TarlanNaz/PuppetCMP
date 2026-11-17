@@ -14,11 +14,17 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 /** Репозиторий на живых данных. Адрес API приходит из конфигурации сборки. */
-fun createModuleRepository(): ModuleRepository =
-    ModuleRepositoryImpl(api = ForgeApi(client = createHttpClient(), baseUrl = AppConfig.FORGE_BASE_URL))
+fun createModuleRepository(): ModuleRepository {
+    val json = createForgeJson()
+    return ModuleRepositoryImpl(
+        api = ForgeApi(client = createHttpClient(json), baseUrl = AppConfig.FORGE_BASE_URL),
+        parser = ForgeParser(json),
+    )
+}
 
 internal class ModuleRepositoryImpl(
     private val api: ForgeApi,
+    private val parser: ForgeParser,
     private val workDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ModuleRepository {
 
@@ -40,9 +46,9 @@ internal class ModuleRepositoryImpl(
     }
 
     override suspend fun getModule(slug: String): PuppetModule? {
-        // Чтение тела ответа в строку и разбор — вне UI-диспетчера: ответ бывает большим.
+        // Десериализация и маппинг — вне UI-диспетчера: ответ бывает большим.
         val module = withContext(workDispatcher) {
-            api.moduleJson(slug)?.let(ForgeParser::parseModule)
+            api.module(slug)?.let(parser::parseModule)
         } ?: return null
         remember(listOf(module))
         return module
@@ -99,9 +105,9 @@ internal class ModuleRepositoryImpl(
     }
 
     private suspend fun fetchPage(query: String, limit: Int, offset: Int): ModulesPage {
-        // Чтение тела ответа в строку и разбор — вне UI-диспетчера: ответ бывает большим.
+        // Десериализация и маппинг — вне UI-диспетчера: ответ бывает большим.
         val page = withContext(workDispatcher) {
-            ForgeParser.parsePage(api.modulesJson(query = query, limit = limit, offset = offset))
+            parser.parsePage(api.modules(query = query, limit = limit, offset = offset))
         }
         remember(page.items)
         return page

@@ -10,17 +10,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 /** Разбор ответов API и перевод моделей ответа в доменные. Чистые функции без сети. */
-internal object ForgeParser {
+internal class ForgeParser(private val json: Json) {
 
-    private val json = Json {
-        // Новые поля в ответе чужого API не должны ломать приложение.
-        ignoreUnknownKeys = true
-        // null там, где у поля есть значение по умолчанию, заменяется этим значением.
-        coerceInputValues = true
-    }
-
-    fun parsePage(body: String): ModulesPage {
-        val response = json.decodeFromString(ModulesResponseDto.serializer(), body)
+    fun parsePage(body: JsonElement): ModulesPage {
+        val response = json.decodeFromJsonElement(ModulesResponseDto.serializer(), body)
         val pagination = response.pagination
         return ModulesPage(
             items = response.results.map { it.toDomain() },
@@ -29,8 +22,8 @@ internal object ForgeParser {
         )
     }
 
-    fun parseModule(body: String): PuppetModule =
-        json.decodeFromString(ModuleDto.serializer(), body).toDomain()
+    fun parseModule(body: JsonElement): PuppetModule =
+        json.decodeFromJsonElement(ModuleDto.serializer(), body).toDomain()
 }
 
 internal fun ModuleDto.toDomain(): PuppetModule = PuppetModule(

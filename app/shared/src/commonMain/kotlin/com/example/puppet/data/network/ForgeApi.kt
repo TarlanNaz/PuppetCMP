@@ -1,23 +1,24 @@
 package com.example.puppet.data.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.appendPathSegments
 import io.ktor.http.takeFrom
+import kotlinx.serialization.json.JsonElement
 
 /**
- * Запросы к API каталога. Возвращает сырой текст ответа: разбор JSON — отдельный шаг,
- * который репозиторий выполняет не на UI-диспетчере.
+ * Запросы к API каталога. HTTP-клиент читает JSON через ContentNegotiation,
+ * а ForgeParser преобразует дерево JSON в DTO и доменные модели.
  */
 internal class ForgeApi(
     private val client: HttpClient,
     private val baseUrl: String,
 ) {
-    suspend fun modulesJson(query: String, limit: Int, offset: Int): String =
+    suspend fun modules(query: String, limit: Int, offset: Int): JsonElement =
         client.get {
             url {
                 takeFrom(baseUrl)
@@ -32,10 +33,10 @@ internal class ForgeApi(
                 // С поисковым запросом API само сортирует по релевантности.
                 parameter("query", query)
             }
-        }.bodyAsText()
+        }.body<JsonElement>()
 
-    /** Текст ответа или `null`, если модуля нет (404). */
-    suspend fun moduleJson(slug: String): String? =
+    /** JSON ответа или `null`, если модуля нет (404). */
+    suspend fun module(slug: String): JsonElement? =
         try {
             client.get {
                 url {
@@ -43,7 +44,7 @@ internal class ForgeApi(
                     appendPathSegments("v3", "modules", slug)
                 }
                 parameter("exclude_fields", EXCLUDED_FIELDS)
-            }.bodyAsText()
+            }.body<JsonElement>()
         } catch (e: ClientRequestException) {
             if (e.response.status == HttpStatusCode.NotFound) null else throw e
         }

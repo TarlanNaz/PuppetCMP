@@ -2,9 +2,27 @@ package com.example.puppet.data
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 
 class ForgeParserTest {
+
+    private val json = createForgeJson()
+    private val parser = ForgeParser(json)
+
+    @Test
+    fun parserUsesInjectedJsonConfiguration() {
+        val body = json.parseToJsonElement(
+            """{"slug":"owner-module","name":"module","unknown":true}""",
+        )
+
+        assertFailsWith<SerializationException> {
+            ForgeParser(Json).parseModule(body)
+        }
+        assertEquals("owner-module", parser.parseModule(body).slug)
+    }
 
     @Test
     fun pageIsParsedAndUnknownFieldsAreIgnored() {
@@ -31,7 +49,7 @@ class ForgeParserTest {
             }
         """.trimIndent()
 
-        val page = ForgeParser.parsePage(body)
+        val page = parser.parsePage(json.parseToJsonElement(body))
 
         assertEquals(60, page.nextOffset)
         val module = page.items.single()
@@ -48,7 +66,7 @@ class ForgeParserTest {
     fun lastPageHasNoNextOffset() {
         val body = """{"pagination": {"limit": 20, "offset": 0, "next": null}, "results": []}"""
 
-        assertNull(ForgeParser.parsePage(body).nextOffset)
+        assertNull(parser.parsePage(json.parseToJsonElement(body)).nextOffset)
     }
 
     @Test
@@ -64,7 +82,7 @@ class ForgeParserTest {
             }
         """.trimIndent()
 
-        val module = ForgeParser.parseModule(body)
+        val module = parser.parseModule(json.parseToJsonElement(body))
 
         assertEquals("someone", module.owner)
         assertEquals(0L, module.downloads)
