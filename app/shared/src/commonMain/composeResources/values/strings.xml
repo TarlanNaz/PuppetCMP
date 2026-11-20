@@ -16,4 +16,6 @@
     <string name="section_neighbours">Рядом по числу загрузок</string>
     <string name="no_summary">Описания нет</string>
     <string name="language_switch">EN</string>
+    <string name="load_error">Не удалось загрузить данные</string>
+    <string name="action_retry">Повторить</string>
 </resources>

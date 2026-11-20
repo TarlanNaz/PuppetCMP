@@ -16,4 +16,6 @@
     <string name="section_neighbours">Nearby by downloads</string>
     <string name="no_summary">No description</string>
     <string name="language_switch">RU</string>
+    <string name="load_error">Failed to load data</string>
+    <string name="action_retry">Retry</string>
 </resources>

@@ -1,19 +1,18 @@
 package com.example.puppet.domain
 
-interface ModuleRepository {
-    suspend fun getModules(): List<PuppetModule>
+/** Источник модулей. Держит сетевые ресурсы, поэтому закрывается вместе с приложением. */
+interface ModuleRepository : AutoCloseable {
+    /** Страница каталога. Пустой [query] — весь каталог по убыванию загрузок. */
+    suspend fun getModulesPage(query: String, offset: Int): ModulesPage
+
+    /** Модуль по slug или `null`, если такого в источнике нет. */
     suspend fun getModule(slug: String): PuppetModule?
-}
 
-suspend fun ModuleRepository.getModules(query: String?): List<PuppetModule> =
-    getModules().filterByQuery(query)
-
-fun List<PuppetModule>.filterByQuery(query: String?): List<PuppetModule> {
-    val needle = query?.trim().orEmpty()
-    if (needle.isEmpty()) return this
-    return filter {
-        it.name.contains(needle, ignoreCase = true) || it.owner.contains(needle, ignoreCase = true)
-    }
+    /**
+     * Соседи модуля в рейтинге всего каталога по числу загрузок: сам модуль и по одному
+     * модулю выше и ниже него (у первого в каталоге соседа выше нет).
+     */
+    suspend fun getNeighbours(slug: String): List<PuppetModule>
 }
 
 fun List<PuppetModule>.neighboursOf(slug: String): List<PuppetModule> {
